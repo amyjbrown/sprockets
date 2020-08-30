@@ -38,7 +38,7 @@ int main(int argc, char* argv) {
             case NR_No_Data:
                 continue; // retry
             default:
-                prtinf("Recieved ")
+                prtinf("Recieved ");
         }
 
 
