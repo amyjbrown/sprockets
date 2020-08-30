@@ -2,7 +2,9 @@
  * implementation of network.h
 */
 #include <sys/socket.h>
+#include <sys/types.h>
 #include <netinet/in.h>
+#include <unistd.h>
 #include <errno.h>
 #include <stdlib.h>
 #include <arpa/inet.h>
@@ -16,7 +18,7 @@ NetResult TCPServer(const char* port, socket_t* out){
     struct addrinfo hints; // hints for getaddrinfo()
     struct addrinfo* servinfo; // pointer to results
 
-    metset(&hints, 0, sizeof(hints));
+    memset(&hints, 0, sizeof(hints));
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags = AI_PASSIVE;
@@ -30,7 +32,7 @@ NetResult TCPServer(const char* port, socket_t* out){
     struct addrinfo* ptr;
     for (ptr = servinfo; ptr != NULL; ptr = ptr->ai_next) {
         // Check to see if we can both initialize a socket of the appropriate protocol, and bind it to our chose protocol/adddress
-        if (server = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol) == -1) continue;
+        if ((server = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol)) == -1) continue;
         if (bind(server, ptr->ai_addr, ptr->ai_addrlen) == -1) continue;
 
         //If we have no issue, then we break out
@@ -78,9 +80,9 @@ NetResult TCPConnect(const char* address, const char* port, socket_t* out) {
     struct addrinfo* ptr;
     for(ptr = info; ptr != NULL; ptr = ptr->ai_next) {
         //First initialize a socket
-        if (connection = 
-            socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol) 
-        == -1){
+        if ((connection = 
+            socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol)) 
+            == -1) {
             continue;
         } 
         // If we are unable to connect using this protocol, close it and try again
@@ -129,7 +131,7 @@ NetResult TCPRecv(socket_t socket, char* out, unsigned int len, unsigned int* re
         return NR_BadArguement;
     }
 
-    int position = 0;
+    unsigned int position = 0;
 
     while (position != len) {
         int result = recv(socket, &out[position], len - position, 0);
@@ -165,4 +167,5 @@ NetResult TCPRecv(socket_t socket, char* out, unsigned int len, unsigned int* re
     }
 
     if (recieved != NULL) *recieved = position;
+    return NR_OK;
 }
