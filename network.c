@@ -122,22 +122,47 @@ NetResult TCPSend(socket_t socket, char* payload, unsigned int len){
     return NR_OK;
 }
 
-NetResult TCPRecv(socket_t socket, char* out, unsigned int len) {
+// TODO this doesn't work like it should
+NetResult TCPRecv(socket_t socket, char* out, unsigned int len, unsigned int* recieved) {
+    // Appropriate short circuiting
+    if (out == NULL) {
+        return NR_BadArguement;
+    }
+
     int position = 0;
 
     while (position != len) {
         int result = recv(socket, &out[position], len - position, 0);
         
-        if (result == -1) {
-            return NR_No_Data;
-        }
-        
-        if (result == 0) {
-            return NR_Disconect;
-        }
+        // TODO this part
 
-        position += result;
+        switch(result){
+            case 0:
+            // If the connection discconected, show us how much data was recived and then exit with that
+                *recieved = position;
+                return NR_Disconect;
+                break;
+
+            case -1:
+            /* If theres less data in the buffer than we requested but still some, return as NR_OK
+             * else, signal that there was no data in the call (so user code can skip over managing it)
+             */
+                if (position == 0){
+                    return NR_No_Data;
+                } else {
+                    if (recieved != NULL) {
+                        *recieved = position;
+                        }
+                    return NR_OK;
+                }
+                break;
+
+            default:
+            // If all is well, update position approprivately and continue
+                position += result;
+                break;
+        } 
     }
 
-    return NR_OK;
+    if (recieved != NULL) *recieved = position;
 }
