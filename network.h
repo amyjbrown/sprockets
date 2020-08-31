@@ -13,9 +13,12 @@ typedef enum {
     NR_Disconect,       // For when a connection is disconnected
     NR_BadAddress,      // For when an address is badly formmated
     NR_BadArguement,    // For when the arguements passed to a function are illegal. NR_BadAdddress should be used if it fits bietter
-    NR_No_Data,         // For if a socket has no data to be sent
+    NR_No_Data,         // For if a connection has no data to be sent
+    NR_SocketError,     // Unconnected sock or other issue for socket
+    NR_MemoryError,     // There was not enough memory for the requested operation
+    NR_Refused,         // For when a remote host refuses the connection 
     NR_Failure = 32     /*Generic Failure. This is a sign a function needs to be further developed*/
-} NetResult; 
+} NetResult;
 
 /** TCPServer()
  * Create and initialize a socket to be used as a listening server, use TCPClient() to get new client connections for use

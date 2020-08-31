@@ -125,6 +125,7 @@ NetResult TCPSend(socket_t socket, char* payload, unsigned int len){
 }
 
 // TODO this doesn't work like it should
+// this should be rebranded as TCPRecvall, ala TCPSendall (which is what TCPSend currently is?)
 NetResult TCPRecv(socket_t socket, char* out, unsigned int len, unsigned int* recieved) {
     // Appropriate short circuiting
     if (out == NULL) {
@@ -134,38 +135,81 @@ NetResult TCPRecv(socket_t socket, char* out, unsigned int len, unsigned int* re
     unsigned int position = 0;
 
     while (position != len) {
-        int result = recv(socket, &out[position], len - position, 0);
-        
-        // TODO this part
+        int old_error = errno; 
+        errno = 0;
 
-        switch(result){
-            case 0:
-            // If the connection discconected, show us how much data was recived and then exit with that
-                *recieved = position;
-                return NR_Disconect;
-                break;
+        int result = recv(socket, &out[position], len - position, MSG_DONTWAIT);
 
-            case -1:
-            /* If theres less data in the buffer than we requested but still some, return as NR_OK
-             * else, signal that there was no data in the call (so user code can skip over managing it)
-             */
-                if (position == 0){
-                    return NR_No_Data;
-                } else {
-                    if (recieved != NULL) {
+        /*return what data we could recieve, or 0, if the other side breaks connection*/
+
+        if (result == 0){
+            *recieved = position;
+            return NR_Disconect;
+        }
+
+        // If there is an error, handle that appropriately
+        if (result == -1) {
+            /*If there's no more data, then if we*/
+            switch (errno){
+                case EAGAIN:
+                case EWOULDBLOCK:
+                // If we got some data and there's no more left return the data and the ammoount recieved
+                    if (position > 0) {
                         *recieved = position;
-                        }
-                    return NR_OK;
-                }
-                break;
+                        return NR_OK;
+                    }
+                    else {
+                        *recieved = 0;
+                        return NR_No_Data;
+                    }
+                case EBADF:
+                case EFAULT:
+                case EINVAL:
+                case ENOTSOCK:
+                    *recieved = position;
+                    return NR_BadArguement;
+                case ENOMEM:
+                    *recieved = position;
+                    return NR_MemoryError;
+                case ECONNREFUSED:
+                    *recieved = position;
+                    return NR_Refused;
+                
 
-            default:
-            // If all is well, update position approprivately and continue
-                position += result;
-                break;
-        } 
+                default:
+                    *recieved = position;
+                    return NR_Failure;
+                // default:
+                //    *recieved = position;
+                //    return NR_Failure;
+            }
+        // switch(result){
+        //     case -1:
+        //     /* If theres less data in the buffer than we requested but still some, return as NR_OK
+        //      * else, signal that there was no data in the call (so user code can skip over managing it)
+        //      */
+        //         if (position == 0){
+        //             return NR_No_Data;
+        //         } else {
+        //             if (recieved != NULL) {
+        //                 *recieved = position;
+        //                 }
+        //             return NR_OK;
+        //         }
+        //         break;
+        //         position += result;
+        //         break;
     }
 
     if (recieved != NULL) *recieved = position;
     return NR_OK;
 }
+
+// I swear to god I'll use this
+#define handle(call, holder){ \
+    int old_error = errno; \
+    errno = 0; \
+    call; \
+    holder = errno; \
+    errno = old_error;\
+} while (0);

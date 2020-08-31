@@ -6,41 +6,51 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "network.h"
+#include "../network.h"
 
 
-int main(int argc, char* argv) {
+int main() {
     
     socket_t listen_server;
     if (TCPServer("8000", &listen_server) > 0) {
-        printf("Error - couldn't intialize server");
+        printf("Error - couldn't intialize server\n");
         exit(1);
     }
 
     socket_t client;
-    if (TCPClient(listen_server, &client) > 0) {
-        printf("Error: couldn't intialize client");
+    if (TCPClient(listen_server, &client)) {
+        printf("Error: couldn't intialize client\n");
         exit(1);
     }
+
     // Now that we have a listen server and an appropriate client, we wait for data and then send it back
     char buffer[1024];
-    int recieved;
-    loop:
+    unsigned int sent;
+
     for (;;){
         memset(buffer, 0, 1024);
-        
+        sent=0;
+
         // Stream data in
-        switch(TCPRecv(client, buffer, 1024)){
-            case NR_Disconect:
-                printf("Client disconnected! ending server");
+        printf("waiting on data....\n");
+        if (TCPRecv(client, buffer, 1024, &sent)){
+            printf("Error, retrying\n");
+        } else {
+            printf("Recieved %d bytes: %.*s \n", sent, sent, buffer);
+        }
+        
+        printf("attempting to send data...\n");
+        switch(TCPSend(client, buffer, sent)){
+            case NR_OK:
+                printf("Sucessfully sent %d bytes!\n", sent);
+                break;
+            case NR_Failure:
+                printf("Error sending data, quitting\n");
                 exit(1);
                 break;
-            case NR_No_Data:
-                continue; // retry
             default:
-                prtinf("Recieved ");
+                printf("Misc error!\n");
+                exit(1);
         }
-
-
     }
 }

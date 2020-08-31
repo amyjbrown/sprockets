@@ -1,0 +1,5 @@
+#ignore created tests
+bin/
+# debugging config
+tasks/
+.vscode/
