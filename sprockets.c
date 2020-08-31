@@ -12,7 +12,7 @@
 #include <netdb.h>
 
 
-#include "network.h"
+#include "sprockets.h"
 
 NetResult TCPServer(const char* port, socket_t* out){
     struct addrinfo hints; // hints for getaddrinfo()
