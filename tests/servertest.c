@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../network.h"
+#include "../sprockets.h"
 
 
 int main() {
@@ -35,6 +35,7 @@ int main() {
         printf("waiting on data....\n");
         if (TCPRecv(client, buffer, 1024, &sent)){
             printf("Error, retrying\n");
+            continue;
         } else {
             printf("Recieved %d bytes: %.*s \n", sent, sent, buffer);
         }

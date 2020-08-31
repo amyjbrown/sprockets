@@ -66,7 +66,7 @@ NetResult TCPSend(socket_t socket, char* payload, unsigned int len);
 /*Gets the data from the connection and pushes it into out out
  * TODO  
 */
-NetResult TCPRecv(socket_t socket, char* out, unsigned int len, unsigned int* recieved);
+NetResult TCPRecv(socket_t socket, char* out, unsigned int length, unsigned int* recieved);
 
 /*Kills the connection*/
 NetResult TCPKill(socket_t socket);
