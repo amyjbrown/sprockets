@@ -151,6 +151,18 @@ NetResult TCPRecv(socket_t socket, char* out, unsigned int length, unsigned int*
 }
 
 
+/**
+ * Todo what do I even with this?
+ * SprocketKill(socket_t socket);
+ * SprockKill()?
+*/
+NetResult TCPKill(socket_t socket){
+    if(close(socket)){
+        return NR_Failure;
+    }
+}
+
+
 // TODO this doesn't work like it should
 // this should be rebranded as TCPRecvall, ala TCPSendall (which is what TCPSend currently is?)
 // NetResult TCPRecvall(socket_t socket, char* out, unsigned int len, unsigned int* recieved) {

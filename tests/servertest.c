@@ -40,6 +40,10 @@ int main() {
             printf("Recieved %d bytes: %.*s \n", sent, sent, buffer);
         }
         
+        if (strncmp(buffer, ":shutdown", 9)){
+            break;
+        }
+
         printf("attempting to send data...\n");
         switch(TCPSend(client, buffer, sent)){
             case NR_OK:
@@ -54,4 +58,8 @@ int main() {
                 exit(1);
         }
     }
+    
+    // Now kill it off
+    TCPKill(client);
+    TCPKill(listen_server);
 }

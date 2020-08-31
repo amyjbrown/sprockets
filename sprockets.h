@@ -6,6 +6,8 @@
 #ifndef  NETWORK_LIB_H
 #define  NETWORK_LIB_H 
 
+#include <stdbool.h>
+
 typedef int socket_t;
 //wooo
 typedef enum {
@@ -63,8 +65,17 @@ NetResult TCPConnect(const char* address, const char* port, socket_t* out);
  * Returns NetResult: TODO
 */
 NetResult TCPSend(socket_t socket, char* payload, unsigned int len);
-/*Gets the data from the connection and pushes it into out out
- * TODO  
+/** TCPRecv()
+ * Blocking function call that takes and stores data from connection into buffer
+ * Up to and including `length` bytes are consumed from the stream and stored
+ * If the function call fails then `recieved` is set to 0
+ * 
+ * socket(socket_t): socket to stream data from
+ * out (char*): buffer to store data into
+ * length (unsigned int): length of data to be stored
+ * recieved(unsigned int*): pointer of location to store data into
+ * Return (NetResult): TODO
+ * 
 */
 NetResult TCPRecv(socket_t socket, char* out, unsigned int length, unsigned int* recieved);
 
