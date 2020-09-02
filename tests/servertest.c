@@ -60,6 +60,6 @@ int main() {
     }
     
     // Now kill it off
-    TCPKill(client);
-    TCPKill(listen_server);
+    TCPKill(client, true);
+    TCPKill(listen_server, true);
 }
