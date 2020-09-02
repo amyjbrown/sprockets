@@ -156,10 +156,18 @@ NetResult TCPRecv(socket_t socket, char* out, unsigned int length, unsigned int*
  * SprocketKill(socket_t socket);
  * SprockKill()?
 */
-NetResult TCPKill(socket_t socket){
+NetResult TCPKill(socket_t socket, bool quickly){
+    /*Shut both forms down, and then close the connection*/
+    if (quickly) {
+        if (shutdown(socket, SHUT_RDWR) == -1) return NR_Failure;
+    } else {
+        if (shutdown(socket, SHUT_WR) == -1) return NR_Failure;
+    }
+
     if(close(socket)){
         return NR_Failure;
-    }
+    } 
+    return NR_OK;
 }
 
 
