@@ -159,7 +159,7 @@ NetResult TCPRecv(socket_t socket, char* out, unsigned int length, unsigned int*
 NetResult TCPKill(socket_t socket){
     if(close(socket)){
         return NR_Failure;
-    }
+    } else return NR_OK;
 }
 
 

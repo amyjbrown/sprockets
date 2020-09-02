@@ -40,7 +40,7 @@ int main() {
             printf("Recieved %d bytes: %.*s \n", sent, sent, buffer);
         }
         
-        if (strncmp(buffer, ":shutdown", 9)){
+        if (strncmp(buffer, "\\quit", 9) == 0){
             break;
         }
 
