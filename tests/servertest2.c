@@ -13,7 +13,7 @@ int main() {
     }
 
     socket_t client;
-    if (TCPClient(listen_server, &client)){
+    if (TCPAccept(listen_server, &client)){
         printf("couldn't establish client connection");
         exit(0);
     }

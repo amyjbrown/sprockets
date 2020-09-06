@@ -32,7 +32,7 @@ typedef enum {
  */
 NetResult TCPServer(const char* port, socket_t* out);
 
-/** TCPClient()
+/** TCPAccept()
  *  equivalent to acept() call, accepts a listening socket and stores new connection in out
  * 
  * server (socket_t): listening socket, initialized with TCPServer() or listen(), to listen for new connections on
@@ -40,7 +40,7 @@ NetResult TCPServer(const char* port, socket_t* out);
  * 
  * Returns NetResult: TODO error code
 */
-NetResult TCPClient(socket_t server, socket_t* out);
+NetResult TCPAccept(socket_t server, socket_t* out);
 
 /** TCPConnect()
  * Initiates a client connection to (address, port) into out

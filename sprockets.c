@@ -51,7 +51,7 @@ NetResult TCPServer(const char* port, socket_t* out){
     return NR_OK;
 }
 
-NetResult TCPClient(socket_t server, socket_t* out) {
+NetResult TCPAccept(socket_t server, socket_t* out) {
     // TODO may add debug info using these
     socket_t client = accept(server, NULL, NULL);
     if (client == -1) {
